@@ -9,6 +9,9 @@ def get_genre_map():
     """
     Fetch all movie genres from TMDB and return a dictionary mapping 
     lowercase genre names to their IDs.
+
+    Returns:
+        dict: A dictionary where keys are lowercase genre names (str) and values are genre IDs (int).
     """
     url = f"https://api.themoviedb.org/3/genre/movie/list?api_key={api_key}"
     response = requests.get(url).json()
@@ -21,8 +24,12 @@ def get_genre_map():
 def get_movies_by_genre(genre_names):
     """
     Find movies that match ALL of the given genre names.
-    genre_names: List of strings, e.g. ["Action", "Thriller"]
-    Returns a list of movie titles.
+
+    Parameters:
+        genre_names (list[str]): A list of genre names to filter by (e.g. ["Action", "Thriller"]).
+
+    Returns:
+        list[str]: A list of titles of movies matching all specified genres.
     """
     genre_map = get_genre_map()
     valid_ids = []
