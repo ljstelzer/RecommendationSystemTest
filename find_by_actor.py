@@ -5,25 +5,42 @@ from dotenv import load_dotenv
 load_dotenv()
 api_key = os.getenv("TMDB_API_KEY")
 
-movie_id = 550 # Fight Club
+def get_actor_id(actor_name):
+    """
+    Search for an actor by name and return the ID of the first result.
+    """
+    url = f"https://api.themoviedb.org/3/search/person?api_key={api_key}&query={actor_name}"
+    response = requests.get(url).json()
 
-# 1. Get Credits to find Cast IDs
-url_credits = f"https://api.themoviedb.org/3/movie/{movie_id}/credits?api_key={api_key}"
-credits = requests.get(url_credits).json()
+    if response['results']:
+        return response['results'][0]['id']
+    return None
 
-# Find Brad Pitt's ID
-actor_id = None
-for cast_member in credits['cast']:
-    if cast_member['name'] == "Brad Pitt":
-        actor_id = cast_member['id']
-        break
-
-if actor_id:
-    print(f"Found Brad Pitt (ID: {actor_id})")
+def get_movies_by_actor(actor_name):
+    """
+    Find movies featuring the given actor.
+    Returns a list of movie titles.
+    """
+    actor_id = get_actor_id(actor_name)
     
-    # 2. Discover movies with this actor
+    if not actor_id:
+        print(f"Actor '{actor_name}' not found.")
+        return []
+    
+    print(f"Found Actor ID: {actor_id} for '{actor_name}'")
+    
+    # Discover movies with this actor
     url_discover = f"https://api.themoviedb.org/3/discover/movie?api_key={api_key}&with_cast={actor_id}&sort_by=popularity.desc"
     results = requests.get(url_discover).json()
+    
+    movie_titles = [m['title'] for m in results['results']]
+    return movie_titles
 
-    for m in results['results'][:5]:
-        print(f"- {m['title']}")
+if __name__ == "__main__":
+    # Example usage
+    target_actor = "Brad Pitt"
+    movies = get_movies_by_actor(target_actor)
+    
+    print(f"Movies with {target_actor}:")
+    for title in movies[:5]:
+        print(f"- {title}")

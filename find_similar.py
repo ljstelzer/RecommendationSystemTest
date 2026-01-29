@@ -5,12 +5,41 @@ from dotenv import load_dotenv
 load_dotenv()
 api_key = os.getenv("TMDB_API_KEY")
 
-movie_id = 550 # Fight Club
+def get_movie_id(movie_name):
+    """
+    Search for a movie by name and return the ID of the first result.
+    """
+    url = f"https://api.themoviedb.org/3/search/movie?api_key={api_key}&query={movie_name}"
+    response = requests.get(url).json()
+    
+    if response['results']:
+        # Return the first match
+        return response['results'][0]['id']
+    return None
 
-# Get Similar Movies directly
-url_similar = f"https://api.themoviedb.org/3/movie/{movie_id}/similar?api_key={api_key}"
-results = requests.get(url_similar).json()
+def get_similar_movies(movie_name):
+    """
+    Find similar movies to the given movie name.
+    Returns a list of movie titles.
+    """
+    movie_id = get_movie_id(movie_name)
+    
+    if not movie_id:
+        print(f"Movie '{movie_name}' not found.")
+        return []
+    
+    # Get Similar Movies directly
+    url_similar = f"https://api.themoviedb.org/3/movie/{movie_id}/similar?api_key={api_key}"
+    results = requests.get(url_similar).json()
+    
+    movie_titles = [m['title'] for m in results['results']]
+    return movie_titles
 
-print(f"Movies similar to Fight Club:")
-for m in results['results'][:5]:
-    print(f"- {m['title']}")
+if __name__ == "__main__":
+    # Example usage
+    target_movie = "Fight Club"
+    similar_movies = get_similar_movies(target_movie)
+    
+    print(f"Movies similar to {target_movie}:")
+    for title in similar_movies[:5]:
+        print(f"- {title}")

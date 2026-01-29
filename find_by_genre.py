@@ -1,30 +1,61 @@
 import os
 import requests
-import letterboxdpy
 from dotenv import load_dotenv
 
 load_dotenv()
 api_key = os.getenv("TMDB_API_KEY")
 
-# 1. Get Details for Fight Club (ID 550) to find its genres
-movie_id = 550
-url_details = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}"
-movie_data = requests.get(url_details).json()
+def get_genre_map():
+    """
+    Fetch all movie genres from TMDB and return a dictionary mapping 
+    lowercase genre names to their IDs.
+    """
+    url = f"https://api.themoviedb.org/3/genre/movie/list?api_key={api_key}"
+    response = requests.get(url).json()
+    
+    genre_map = {}
+    for genre in response.get('genres', []):
+        genre_map[genre['name'].lower()] = genre['id']
+    return genre_map
 
-# Extract genre IDs (e.g., Drama=18)
-genre_ids = [str(g['id']) for g in movie_data['genres']]
-genre_string = ",".join(genre_ids)
+def get_movies_by_genre(genre_names):
+    """
+    Find movies that match ALL of the given genre names.
+    genre_names: List of strings, e.g. ["Action", "Thriller"]
+    Returns a list of movie titles.
+    """
+    genre_map = get_genre_map()
+    valid_ids = []
+    found_names = []
+    
+    for name in genre_names:
+        key = name.lower()
+        if key in genre_map:
+            valid_ids.append(str(genre_map[key]))
+            found_names.append(name)
+        else:
+            print(f"Warning: Genre '{name}' not found.")
+            
+    if not valid_ids:
+        print("No valid genres found.")
+        return []
+        
+    genre_string = ",".join(valid_ids)
+    print(f"Searching for movies with genres: {', '.join(found_names)} (IDs: {genre_string})")
+    
+    # Discover movies with these genres
+    # with_genres uses comma for AND logic (must have all genres)
+    url_discover = f"https://api.themoviedb.org/3/discover/movie?api_key={api_key}&with_genres={genre_string}&sort_by=popularity.desc"
+    results = requests.get(url_discover).json()
+    
+    movie_titles = [m['title'] for m in results['results']]
+    return movie_titles
 
-# Extract genre names for display
-genre_names = [g['name'] for g in movie_data['genres']]
-genre_names_string = ", ".join(genre_names)
-
-print(f"Finding movies with genres: {genre_names_string}")
-
-# 2. Discover movies with these genres
-# with_genres uses comma for AND logic (must have all genres)
-url_discover = f"https://api.themoviedb.org/3/discover/movie?api_key={api_key}&with_genres={genre_string}&sort_by=popularity.desc"
-results = requests.get(url_discover).json()
-
-for m in results['results'][:5]:
-    print(f"- {m['title']}")
+if __name__ == "__main__":
+    # Example usage
+    target_genres = ["Drama", "Thriller"]
+    movies = get_movies_by_genre(target_genres)
+    
+    print(f"Movies in genres {target_genres}:")
+    for title in movies[:5]:
+        print(f"- {title}")
