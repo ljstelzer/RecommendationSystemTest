@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letterboxd Movie Graph</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #14181c;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+        }
+        .container {
+            background: #1c2228;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid #2c3440;
+        }
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 2rem;
+            color: #ffffff;
+        }
+        .subtitle {
+            color: #9ab;
+            margin-bottom: 30px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        input[type="text"] {
+            padding: 15px 20px;
+            font-size: 1rem;
+            border: 1px solid #2c3440;
+            border-radius: 10px;
+            background: #2c3440;
+            color: #ffffff;
+        }
+        input[type="text"]::placeholder {
+            color: #9ab;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #00e054;
+        }
+        button {
+            padding: 15px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            background: #00e054;
+            color: #14181c;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #00c448;
+        }
+        .error {
+            background: rgba(255, 128, 0, 0.15);
+            border: 1px solid #ff8000;
+            color: #ff8000;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .info {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #9ab;
+        }
+        .info a {
+            color: #40bcf4;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Letterboxd Movie Graph</h1>
+        <p class="subtitle">Discover actor connections in your watched movies</p>
+
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <form method="post" action="/graph">
+            <input type="text" name="username" placeholder="Enter Letterboxd username" required>
+            <button type="submit">Generate Graph</button>
+        </form>
+
+        <p class="info">
+            Enter a Letterboxd username to see a graph of their last 50 logged movies,
+            connected by shared actors.
+        </p>
+    </div>
+</body>
+</html>

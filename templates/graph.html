@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Graph - {{ username }}</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #14181c;
+            margin: 0;
+            color: #ffffff;
+        }
+        .header {
+            background: #1c2228;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 1px solid #2c3440;
+        }
+        .title {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #ffffff;
+        }
+        .stats {
+            display: flex;
+            gap: 20px;
+            color: #9ab;
+        }
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00e054;
+        }
+        .stat-label {
+            font-size: 0.8rem;
+        }
+        .back-link {
+            color: #40bcf4;
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 1px solid #40bcf4;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .back-link:hover {
+            background: #40bcf4;
+            color: #14181c;
+        }
+        .graph-container {
+            width: 100%;
+            height: calc(100vh - 100px);
+            background: #14181c;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">{{ username }}'s Movie Graph</h1>
+        <div class="stats">
+            <div class="stat">
+                <span class="stat-value">{{ num_movies }}</span>
+                <span class="stat-label">Movies</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value">{{ num_edges }}</span>
+                <span class="stat-label">Connections</span>
+            </div>
+        </div>
+        <a href="/" class="back-link">Try Another User</a>
+    </div>
+
+    <div class="graph-container">
+        {{ graph_html | safe }}
+    </div>
+</body>
+</html>
